@@ -3,11 +3,12 @@ import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 
 import { Observable, of } from 'rxjs';
-import { pluck, tap, map, catchError } from 'rxjs/operators';
+import { map, catchError } from 'rxjs/operators';
 
 import { environment } from '../../environments/environment.prod';
 import { ILoginForm } from '../models/login-form';
 import { IRegisterForm } from '../models/register-form';
+import { IUsuario } from '../models/usuario';
 
 const base_url = environment.base_url;
 
@@ -18,12 +19,21 @@ declare const gapi: any;
 })
 export class UsuarioService {
   auth2: any;
+  usuario: IUsuario;
   constructor(
     private http: HttpClient,
     private router: Router,
     private ngZone: NgZone
   ) {
     this.googleInit();
+  }
+
+  get token(): string {
+    return localStorage.getItem('token') || '';
+  }
+
+  get uid(): string {
+    return this.usuario.uid || '';
   }
 
   googleInit() {
@@ -47,39 +57,66 @@ export class UsuarioService {
   }
 
   validarToken(): Observable<boolean> {
-    const token = localStorage.getItem('token') || '';
     return this.http
       .get(`${base_url}/login/renew`, {
         headers: {
-          'x-token': token,
+          'x-token': this.token,
         },
       })
       .pipe(
-        pluck('token'),
-        tap((token: string) => localStorage.setItem('token', token)),
-        map((token: string) => true),
+        map((resp: any) => {
+          this.usuario = resp.usuario;
+          localStorage.setItem('token', resp.token);
+          return true;
+        }),
         catchError((error) => of(false))
       );
   }
 
-  crearUsuario(formData: IRegisterForm): Observable<string> {
-    return this.http.post(`${base_url}/usuarios`, formData).pipe(
-      pluck('token'),
-      tap((resp: string) => localStorage.setItem('token', resp))
-    );
+  crearUsuario(formData: IRegisterForm): Observable<any> {
+    return this.http
+      .post(`${base_url}/usuarios`, formData)
+      .pipe(map((resp: any) => localStorage.setItem('token', resp.token)));
   }
 
-  login(formData: ILoginForm): Observable<string> {
-    return this.http.post(`${base_url}/login`, formData).pipe(
-      pluck('token'),
-      tap((resp: string) => localStorage.setItem('token', resp))
-    );
+  actualizarPerfil(data: IUsuario) {
+    data = {
+      ...data,
+      role: this.usuario.role,
+    };
+    return this.http
+      .put(`${base_url}/usuarios/${this.uid}`, data, {
+        headers: {
+          'x-token': this.token,
+        },
+      })
+      .pipe(
+        map((resp: any) => {
+          this.usuario.nombre = resp.usuario.nombre;
+          this.usuario.email = resp.usuario.email;
+        })
+      );
   }
 
-  loginGoogle(token): Observable<string> {
-    return this.http.post(`${base_url}/login/google`, { token }).pipe(
-      pluck('token'),
-      tap((resp: string) => localStorage.setItem('token', resp))
-    );
+  login(formData: ILoginForm): Observable<any> {
+    return this.http
+      .post(`${base_url}/login`, formData)
+      .pipe(map((resp: any) => localStorage.setItem('token', resp.token)));
+  }
+
+  loginGoogle(token): Observable<any> {
+    return this.http
+      .post(`${base_url}/login/google`, { token })
+      .pipe(map((resp: any) => localStorage.setItem('token', resp.token)));
+  }
+
+  getImageUsuario() {
+    if (this.usuario.img && this.usuario.img.includes('google')) {
+      return this.usuario.img;
+    } else if (this.usuario.img) {
+      return `${base_url}/upload/usuarios/${this.usuario.img}`;
+    } else {
+      return `${base_url}/upload/usuarios/no-image`;
+    }
   }
 }
