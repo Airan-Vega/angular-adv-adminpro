@@ -13,7 +13,7 @@
             href="#"
             aria-expanded="false"
             ><img [src]="imgUrl" alt="user" /><span class="hide-menu"
-              >{{ usuario.nombre }}
+              >{{ nombre }}
             </span></a
           >
           <ul aria-expanded="false" class="collapse">
@@ -27,7 +27,7 @@
                 >Account Setting</a
               >
             </li>
-            <li><a routerLink="/login">Logout</a></li>
+            <li><a routerLink="/login" (click)="logout()">Logout</a></li>
           </ul>
         </li>
         <li class="nav-devider"></li>

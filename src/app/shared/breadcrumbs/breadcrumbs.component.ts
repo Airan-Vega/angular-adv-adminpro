@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivationEnd, Data, Router } from '@angular/router';
-import { map, filter } from 'rxjs/operators';
-import { Subscription, Observable } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
+import { map, filter, takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-breadcrumbs',
@@ -10,20 +10,22 @@ import { Subscription, Observable } from 'rxjs';
 })
 export class BreadcrumbsComponent implements OnInit, OnDestroy {
   public titulo: string;
-  public tituloSubs$: Subscription;
+  destroy$: Subject<boolean> = new Subject<boolean>();
 
   constructor(private router: Router) {
-    this.tituloSubs$ = this.getArgumentosRuta().subscribe(({ titulo }) => {
-      this.titulo = titulo;
-      // Etiqueta html <title> proveniente del index.html
-      document.title = `AdminPro - ${titulo}`;
-    });
+    this.getArgumentosRuta()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(({ titulo }) => {
+        this.titulo = titulo;
+        // Etiqueta html <title> proveniente del index.html
+        document.title = `AdminPro - ${titulo}`;
+      });
   }
 
   ngOnInit(): void {}
 
   ngOnDestroy(): void {
-    this.tituloSubs$.unsubscribe();
+    this.destroy$.unsubscribe();
     document.title = `AdminPro`;
   }
 

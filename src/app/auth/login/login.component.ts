@@ -1,16 +1,23 @@
-import { Component, OnInit, NgZone } from '@angular/core';
+import { Component, OnInit, NgZone, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
+import Swal from 'sweetalert2';
+import { Store } from '@ngrx/store';
+import { AppState } from '../../store/app.reducers';
+import { cerrarUsuariosSuccess } from '../../store/actions/usuarios.actions';
+
 import { UsuarioService } from '../../services/usuario.service';
 
-import Swal from 'sweetalert2';
 declare const gapi: any;
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css'],
 })
-export class LoginComponent implements OnInit {
+export class LoginComponent implements OnInit, OnDestroy {
   formSubmitted = false;
   auth2: any;
   loginForm: FormGroup = this.fb.group({
@@ -27,36 +34,48 @@ export class LoginComponent implements OnInit {
     remember: [localStorage.getItem('remember') || false],
   });
 
+  destroy$: Subject<boolean> = new Subject<boolean>();
+
   constructor(
     private router: Router,
     private fb: FormBuilder,
     private ngZone: NgZone,
+    private store: Store<AppState>,
     private usuarioService: UsuarioService
   ) {}
 
   ngOnInit(): void {
+    this.store.dispatch(cerrarUsuariosSuccess());
     this.renderButton();
   }
 
+  ngOnDestroy(): void {
+    this.destroy$.next(true);
+    this.destroy$.unsubscribe();
+  }
+
   login() {
-    this.usuarioService.login(this.loginForm.value).subscribe(
-      (resp: string) => {
-        if (this.loginForm.get('remember').value) {
-          localStorage.setItem('email', this.loginForm.get('email').value);
-          localStorage.setItem(
-            'remember',
-            this.loginForm.get('remember').value
-          );
-        } else {
-          localStorage.removeItem('email');
-          localStorage.removeItem('remember');
+    this.usuarioService
+      .login(this.loginForm.value)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(
+        (resp: string) => {
+          if (this.loginForm.get('remember').value) {
+            localStorage.setItem('email', this.loginForm.get('email').value);
+            localStorage.setItem(
+              'remember',
+              this.loginForm.get('remember').value
+            );
+          } else {
+            localStorage.removeItem('email');
+            localStorage.removeItem('remember');
+          }
+          this.router.navigateByUrl('/');
+        },
+        (err) => {
+          Swal.fire('Error', err.error.msg, 'error');
         }
-        this.router.navigateByUrl('/');
-      },
-      (err) => {
-        Swal.fire('Error', err.error.msg, 'error');
-      }
-    );
+      );
   }
 
   renderButton() {
@@ -84,6 +103,7 @@ export class LoginComponent implements OnInit {
         const id_token = googleUser.getAuthResponse().id_token;
         this.usuarioService
           .loginGoogle(id_token)
+          .pipe(takeUntil(this.destroy$))
           .subscribe((resp) =>
             this.ngZone.run(() => this.router.navigateByUrl('/'))
           );

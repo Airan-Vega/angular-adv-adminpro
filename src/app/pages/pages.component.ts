@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { SettingsService } from '../services/settings.service';
-
 // Llamamos una funcion que se encuentra de manera global en la aplicacion
 declare function customInitFunctions(): any;
 @Component({

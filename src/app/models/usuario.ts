@@ -1,7 +1,7 @@
 export interface IUsuario {
   nombre: string;
   email: string;
-  password?: string;
+  terms?: boolean;
   img?: string;
   google?: boolean;
   role?: string;

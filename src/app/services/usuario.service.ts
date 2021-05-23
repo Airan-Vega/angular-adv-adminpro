@@ -73,6 +73,10 @@ export class UsuarioService {
       );
   }
 
+  getUserAuth() {
+    return of(this.usuario);
+  }
+
   crearUsuario(formData: IRegisterForm): Observable<any> {
     return this.http
       .post(`${base_url}/usuarios`, formData)
@@ -84,18 +88,11 @@ export class UsuarioService {
       ...data,
       role: this.usuario.role,
     };
-    return this.http
-      .put(`${base_url}/usuarios/${this.uid}`, data, {
-        headers: {
-          'x-token': this.token,
-        },
-      })
-      .pipe(
-        map((resp: any) => {
-          this.usuario.nombre = resp.usuario.nombre;
-          this.usuario.email = resp.usuario.email;
-        })
-      );
+    return this.http.put(`${base_url}/usuarios/${this.uid}`, data, {
+      headers: {
+        'x-token': this.token,
+      },
+    });
   }
 
   login(formData: ILoginForm): Observable<any> {
@@ -110,11 +107,11 @@ export class UsuarioService {
       .pipe(map((resp: any) => localStorage.setItem('token', resp.token)));
   }
 
-  getImageUsuario() {
-    if (this.usuario.img && this.usuario.img.includes('google')) {
-      return this.usuario.img;
-    } else if (this.usuario.img) {
-      return `${base_url}/upload/usuarios/${this.usuario.img}`;
+  getImageUsuario(image: string) {
+    if (image && image.includes('google')) {
+      return image;
+    } else if (image) {
+      return `${base_url}/upload/usuarios/${image}`;
     } else {
       return `${base_url}/upload/usuarios/no-image`;
     }

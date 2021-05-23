@@ -1,7 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { UsuarioService } from '../../services/usuario.service';
 
 import Swal from 'sweetalert2';
@@ -11,7 +12,7 @@ import Swal from 'sweetalert2';
   templateUrl: './register.component.html',
   styleUrls: ['./register.component.css'],
 })
-export class RegisterComponent implements OnInit {
+export class RegisterComponent implements OnInit, OnDestroy {
   formSubmitted = false;
 
   registerForm: FormGroup = this.fb.group(
@@ -35,6 +36,8 @@ export class RegisterComponent implements OnInit {
     }
   );
 
+  destroy$: Subject<boolean> = new Subject<boolean>();
+
   constructor(
     private fb: FormBuilder,
     private usuarioService: UsuarioService,
@@ -43,20 +46,28 @@ export class RegisterComponent implements OnInit {
 
   ngOnInit(): void {}
 
+  ngOnDestroy(): void {
+    this.destroy$.next(true);
+    this.destroy$.unsubscribe();
+  }
+
   crearUsuario() {
     this.formSubmitted = true;
     const { confirmPassword, ...dataUser } = this.registerForm.value;
     if (this.registerForm.invalid) {
       return;
     }
-    this.usuarioService.crearUsuario(dataUser).subscribe(
-      (resp) => {
-        this.router.navigateByUrl('/');
-      },
-      (err) => {
-        Swal.fire('Error', err.error.msg, 'error');
-      }
-    );
+    this.usuarioService
+      .crearUsuario(dataUser)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(
+        (resp) => {
+          this.router.navigateByUrl('/');
+        },
+        (err) => {
+          Swal.fire('Error', err.error.msg, 'error');
+        }
+      );
   }
 
   campoNoValido(campo: string): boolean {
