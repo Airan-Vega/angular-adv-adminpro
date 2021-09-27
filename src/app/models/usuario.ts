@@ -5,5 +5,5 @@ export interface IUsuario {
   img?: string;
   google?: boolean;
   role?: string;
-  uid?: string;
+  _id?: string;
 }

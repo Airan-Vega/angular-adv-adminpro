@@ -3,7 +3,6 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
-import { cargarUsuarios } from '../../store/actions/usuarios.actions';
 import { AppState } from '../../store/app.reducers';
 
 import { UsuarioService } from '../../services/usuario.service';
@@ -24,7 +23,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    this.store.dispatch(cargarUsuarios());
     this.store
       .select('usuario')
       .pipe(takeUntil(this.destroy$))

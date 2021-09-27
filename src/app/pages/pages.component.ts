@@ -1,5 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { SettingsService } from '../services/settings.service';
+import { Store } from '@ngrx/store';
+import { AppState } from '../store/app.reducers';
+import { cargarUsuarios } from '../store/actions/usuarios.actions';
 // Llamamos una funcion que se encuentra de manera global en la aplicacion
 declare function customInitFunctions(): any;
 @Component({
@@ -8,9 +11,13 @@ declare function customInitFunctions(): any;
   styles: [],
 })
 export class PagesComponent implements OnInit {
-  constructor(private settingsService: SettingsService) {}
+  constructor(
+    private settingsService: SettingsService,
+    private store: Store<AppState>
+  ) {}
 
   ngOnInit(): void {
+    this.store.dispatch(cargarUsuarios());
     customInitFunctions();
   }
 }

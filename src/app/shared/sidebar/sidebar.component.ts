@@ -3,12 +3,10 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
-import { cargarUsuarios } from '../../store/actions/usuarios.actions';
 import { AppState } from '../../store/app.reducers';
 
 import { SidebarService } from '../../services/sidebar.service';
 import { UsuarioService } from '../../services/usuario.service';
-import { IUsuario } from '../../models/usuario';
 
 @Component({
   selector: 'app-sidebar',
@@ -28,7 +26,6 @@ export class SidebarComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.menuItems = this.sidebarService.menu;
-    this.store.dispatch(cargarUsuarios());
     this.store
       .select('usuario')
       .pipe(takeUntil(this.destroy$))

@@ -9,6 +9,7 @@ import { environment } from '../../environments/environment.prod';
 import { ILoginForm } from '../models/login-form';
 import { IRegisterForm } from '../models/register-form';
 import { IUsuario } from '../models/usuario';
+import { CargarUsuario } from '../interfaces/cargar-usuarios-interface';
 
 const base_url = environment.base_url;
 
@@ -33,7 +34,15 @@ export class UsuarioService {
   }
 
   get uid(): string {
-    return this.usuario.uid || '';
+    return this.usuario._id || '';
+  }
+
+  get headers() {
+    return {
+      headers: {
+        'x-token': this.token,
+      },
+    };
   }
 
   googleInit() {
@@ -57,20 +66,14 @@ export class UsuarioService {
   }
 
   validarToken(): Observable<boolean> {
-    return this.http
-      .get(`${base_url}/login/renew`, {
-        headers: {
-          'x-token': this.token,
-        },
-      })
-      .pipe(
-        map((resp: any) => {
-          this.usuario = resp.usuario;
-          localStorage.setItem('token', resp.token);
-          return true;
-        }),
-        catchError((error) => of(false))
-      );
+    return this.http.get(`${base_url}/login/renew`, this.headers).pipe(
+      map((resp: any) => {
+        this.usuario = resp.usuario;
+        localStorage.setItem('token', resp.token);
+        return true;
+      }),
+      catchError((error) => of(false))
+    );
   }
 
   getUserAuth() {
@@ -88,11 +91,11 @@ export class UsuarioService {
       ...data,
       role: this.usuario.role,
     };
-    return this.http.put(`${base_url}/usuarios/${this.uid}`, data, {
-      headers: {
-        'x-token': this.token,
-      },
-    });
+    return this.http.put(
+      `${base_url}/usuarios/${this.uid}`,
+      data,
+      this.headers
+    );
   }
 
   login(formData: ILoginForm): Observable<any> {
@@ -108,12 +111,31 @@ export class UsuarioService {
   }
 
   getImageUsuario(image: string) {
-    if (image && image.includes('google')) {
+    if (!image) {
+      return `${base_url}/upload/usuarios/no-image`;
+    } else if (image && image.includes('google')) {
       return image;
     } else if (image) {
       return `${base_url}/upload/usuarios/${image}`;
-    } else {
-      return `${base_url}/upload/usuarios/no-image`;
     }
+  }
+
+  cargarUsuarios(desde: number = 0) {
+    return this.http.get<CargarUsuario>(
+      `${base_url}/usuarios?from=${desde}`,
+      this.headers
+    );
+  }
+
+  eliminarUsuario(id: string) {
+    return this.http.delete(`${base_url}/usuarios/${id}`, this.headers);
+  }
+
+  actualizarUsuario(usuario: IUsuario) {
+    return this.http.put(
+      `${base_url}/usuarios/${usuario._id}`,
+      usuario,
+      this.headers
+    );
   }
 }

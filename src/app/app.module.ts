@@ -9,6 +9,7 @@ import { AuthModule } from './auth/auth.module';
 import { StoreModule } from '@ngrx/store';
 import { EffectsModule } from '@ngrx/effects';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { appReducers } from './store/app.reducers';
 import { environment } from '../environments/environment';
 
@@ -30,6 +31,7 @@ import { EffectsArray } from './store/effects/index';
       maxAge: 25, // Retains last 25 states
       logOnly: environment.production, // Restrict extension to log-only mode
     }),
+    NgbModule,
   ],
   providers: [],
   bootstrap: [AppComponent],

@@ -7,14 +7,12 @@ import Swal from 'sweetalert2';
 import { Store } from '@ngrx/store';
 import { AppState } from '../../store/app.reducers';
 import {
-  cargarUsuarios,
   actualizarUsuarios,
   actualizarImageUsuarios,
 } from '../../store/actions/usuarios.actions';
 
 import { UsuarioService } from '../../services/usuario.service';
 import { FileUploadService } from '../../services/file-upload.service';
-import { IUsuario } from '../../models/usuario';
 
 @Component({
   selector: 'app-perfil',
@@ -37,8 +35,7 @@ export class PerfilComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    this.userUId = this.usuarioService.usuario.uid;
-    this.store.dispatch(cargarUsuarios());
+    this.userUId = this.usuarioService.usuario._id;
     this.store
       .select('usuario')
       .pipe(takeUntil(this.destroy$))

@@ -39,7 +39,7 @@ const _usuariosReducer = createReducer(
     img: usuarios.img,
     google: usuarios.google,
     role: usuarios.role,
-    uid: usuarios.uid,
+    uid: usuarios._id,
   })),
   on(actualizarUsuarios, (state, { nombre, email }) => ({
     ...state,
