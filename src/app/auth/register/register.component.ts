@@ -53,15 +53,15 @@ export class RegisterComponent implements OnInit, OnDestroy {
 
   crearUsuario() {
     this.formSubmitted = true;
-    const { confirmPassword, ...dataUser } = this.registerForm.value;
-    if (this.registerForm.invalid) {
+    const { confirmPassword, terms, ...dataUser } = this.registerForm.value;
+    if (this.registerForm.invalid || terms === false) {
       return;
     }
     this.usuarioService
       .crearUsuario(dataUser)
       .pipe(takeUntil(this.destroy$))
       .subscribe(
-        (resp) => {
+        () => {
           this.router.navigateByUrl('/');
         },
         (err) => {

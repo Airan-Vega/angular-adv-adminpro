@@ -14,10 +14,10 @@ import { UsuarioService } from '../../services/usuario.service';
   styles: [],
 })
 export class SidebarComponent implements OnInit, OnDestroy {
+  private destroy$: Subject<boolean> = new Subject<boolean>();
   menuItems: any[];
   imgUrl: string;
   nombre: string;
-  destroy$: Subject<boolean> = new Subject<boolean>();
   constructor(
     private sidebarService: SidebarService,
     private usuarioService: UsuarioService,

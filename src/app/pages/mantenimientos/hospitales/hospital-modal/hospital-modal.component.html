@@ -1,0 +1,69 @@
+<div class="modal-body">
+  <div class="row animated fadeIn fast" *ngIf="cargando">
+    <div class="col-12">
+      <div class="alert alert-info text-center">
+        <h4 class="alert-heading">Cargando</h4>
+        <i class="fa fa-spin fa-refresh fa-2x"></i>
+        <p class="mb-0">Por favor espere</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="row animated fadeIn fast" *ngIf="!cargando">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-body">
+          <div class="row">
+            <div class="col-8">
+              <h4 class="card-title">
+                Total de hospitales ({{ totalHospitales }})
+              </h4>
+              <h6 class="card-subtitle">
+                Hospitales registrados en la aplicación
+              </h6>
+            </div>
+          </div>
+
+          <div class="table-responsive">
+            <table class="table table-bordered">
+              <thead>
+                <tr>
+                  <th class="w100">Foto</th>
+                  <th>Nombre</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr
+                  class="cursor"
+                  *ngFor="let hospital of hospitales"
+                  (click)="close(hospital)"
+                >
+                  <td class="text-center">
+                    <img
+                      [src]="hospital.img | imagen: 'hospitales'"
+                      [alt]="hospital.nombre"
+                      class="w100 cursor"
+                    />
+                  </td>
+                  <td>
+                    {{ hospital.nombre }}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <ngb-pagination
+          [(page)]="page"
+          [pageSize]="pageSize"
+          [collectionSize]="totalHospitales"
+          [maxSize]="3"
+          [rotate]="true"
+          [ellipses]="false"
+          [boundaryLinks]="true"
+          (pageChange)="cambiarPagina($event)"
+        ></ngb-pagination>
+      </div>
+    </div>
+  </div>
+</div>

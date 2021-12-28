@@ -22,7 +22,7 @@
   </div>
 </div>
 
-<div class="row">
+<div class="row animated fadeIn fast">
   <div class="col-12">
     <div class="card">
       <div class="card-body">
@@ -48,7 +48,7 @@
                 <td>Lunar probe project</td>
                 <td>Lunar probe project</td>
 
-                <td class="text-nowrap">
+                <td class="text-nowrap text-center">
                   <a
                     href="#"
                     data-toggle="tooltip"

@@ -29,6 +29,7 @@ export class UsuariosComponent implements OnInit, OnDestroy {
   public usuarios: IUsuario[] = [];
   public desde: number = 0;
   public cargando: boolean = true;
+  public busqueda: number;
 
   private destroy$: Subject<boolean> = new Subject<boolean>();
 
@@ -56,9 +57,9 @@ export class UsuariosComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe(({ total, usuarios }) => {
         this.totalUsuarios = total;
-
         this.usuarios = usuarios;
         this.cargando = false;
+        this.busqueda = this.usuarios.length;
       });
   }
 
@@ -75,6 +76,7 @@ export class UsuariosComponent implements OnInit, OnDestroy {
         this.totalUsuarios = resp.total;
         this.usuarios = resp.resultados;
         this.cargando = false;
+        this.busqueda = this.usuarios.length;
       });
     this.page = 1;
     this.desde = 0;

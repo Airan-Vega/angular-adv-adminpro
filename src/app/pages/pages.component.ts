@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { SettingsService } from '../services/settings.service';
 import { Store } from '@ngrx/store';
 import { AppState } from '../store/app.reducers';
 import { cargarUsuarios } from '../store/actions/usuarios.actions';
@@ -11,10 +10,7 @@ declare function customInitFunctions(): any;
   styles: [],
 })
 export class PagesComponent implements OnInit {
-  constructor(
-    private settingsService: SettingsService,
-    private store: Store<AppState>
-  ) {}
+  constructor(private store: Store<AppState>) {}
 
   ngOnInit(): void {
     this.store.dispatch(cargarUsuarios());

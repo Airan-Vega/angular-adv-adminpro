@@ -7,6 +7,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { SharedModule } from '../shared/shared.module';
 import { ComponentsModule } from '../components/components.module';
 import { MantenimientosModule } from './mantenimientos/mantenimientos.module';
+import { PipesModule } from '../pipes/pipes.module';
 
 import { PagesComponent } from './pages.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
@@ -43,6 +44,7 @@ import { PerfilComponent } from './perfil/perfil.component';
     SharedModule,
     ComponentsModule,
     MantenimientosModule,
+    PipesModule,
   ],
 })
 export class PagesModule {}
