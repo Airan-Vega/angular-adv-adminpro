@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { IBuscarUsuario } from '../models/buscar';
+import { IBuscarUsuario, IBusquedaGlobal } from '../models/buscar';
 import { environment } from '../../environments/environment.prod';
 import { map } from 'rxjs/operators';
 
@@ -22,6 +22,13 @@ export class BusquedasService {
         'x-token': this.token,
       },
     };
+  }
+
+  busquedaGlobal(termino: string) {
+    return this.http.get<IBusquedaGlobal>(
+      `${base_url}/todo/${termino}`,
+      this.headers
+    );
   }
 
   buscar(

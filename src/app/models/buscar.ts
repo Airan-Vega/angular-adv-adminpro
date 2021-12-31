@@ -1,3 +1,6 @@
+import { IUsuario } from './usuario';
+import { IMedico } from './medico';
+import { IHospital } from './hospital';
 export interface IBuscarUsuario {
   ok: boolean;
   resultados: Resultado[];
@@ -14,4 +17,10 @@ interface Resultado {
   password: string;
   __v: number;
   img?: string;
+}
+
+export interface IBusquedaGlobal {
+  usuarios: IUsuario[];
+  medicos: IMedico[];
+  hospitales: IHospital[];
 }

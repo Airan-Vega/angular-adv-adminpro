@@ -15,17 +15,17 @@ import { UsuarioService } from '../../services/usuario.service';
 })
 export class SidebarComponent implements OnInit, OnDestroy {
   private destroy$: Subject<boolean> = new Subject<boolean>();
-  menuItems: any[];
-  imgUrl: string;
-  nombre: string;
+
+  public imgUrl: string;
+  public nombre: string;
+
   constructor(
-    private sidebarService: SidebarService,
+    public sidebarService: SidebarService,
     private usuarioService: UsuarioService,
     private store: Store<AppState>
   ) {}
 
   ngOnInit(): void {
-    this.menuItems = this.sidebarService.menu;
     this.store
       .select('usuario')
       .pipe(takeUntil(this.destroy$))

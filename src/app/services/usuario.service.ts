@@ -33,6 +33,10 @@ export class UsuarioService {
     return localStorage.getItem('token') || '';
   }
 
+  get role(): string {
+    return this.usuario.role;
+  }
+
   get uid(): string {
     return this.usuario._id || '';
   }
@@ -43,6 +47,11 @@ export class UsuarioService {
         'x-token': this.token,
       },
     };
+  }
+
+  guardarLocalStorage(token: string, menu: any) {
+    localStorage.setItem('token', token);
+    localStorage.setItem('menu', JSON.stringify(menu));
   }
 
   googleInit() {
@@ -60,6 +69,8 @@ export class UsuarioService {
 
   logout() {
     localStorage.removeItem('token');
+    localStorage.removeItem('menu');
+
     this.auth2.signOut().then(() => {
       this.ngZone.run(() => this.router.navigateByUrl('/login'));
     });
@@ -69,7 +80,7 @@ export class UsuarioService {
     return this.http.get(`${base_url}/login/renew`, this.headers).pipe(
       map((resp: any) => {
         this.usuario = resp.usuario;
-        localStorage.setItem('token', resp.token);
+        this.guardarLocalStorage(resp.token, resp.menu);
         return true;
       }),
       catchError((error) => of(false))
@@ -83,7 +94,9 @@ export class UsuarioService {
   crearUsuario(formData: IRegisterForm): Observable<any> {
     return this.http
       .post(`${base_url}/usuarios`, formData)
-      .pipe(map((resp: any) => localStorage.setItem('token', resp.token)));
+      .pipe(
+        map((resp: any) => this.guardarLocalStorage(resp.token, resp.menu))
+      );
   }
 
   actualizarPerfil(data: IUsuario) {
@@ -101,13 +114,17 @@ export class UsuarioService {
   login(formData: ILoginForm): Observable<any> {
     return this.http
       .post(`${base_url}/login`, formData)
-      .pipe(map((resp: any) => localStorage.setItem('token', resp.token)));
+      .pipe(
+        map((resp: any) => this.guardarLocalStorage(resp.token, resp.menu))
+      );
   }
 
   loginGoogle(token): Observable<any> {
     return this.http
       .post(`${base_url}/login/google`, { token })
-      .pipe(map((resp: any) => localStorage.setItem('token', resp.token)));
+      .pipe(
+        map((resp: any) => this.guardarLocalStorage(resp.token, resp.menu))
+      );
   }
 
   getImageUsuario(image: string) {

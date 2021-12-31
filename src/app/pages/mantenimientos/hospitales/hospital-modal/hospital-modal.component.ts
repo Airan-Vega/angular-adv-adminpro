@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
+
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+
 import { HospitalService } from '../../../../services/hospital.service';
 import { IHospital } from '../../../../models/hospital';
 
